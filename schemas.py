@@ -11,10 +11,11 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
+from datetime import datetime
 
-# Example schemas (replace with your own):
+# Example schemas (kept for reference):
 
 class User(BaseModel):
     """
@@ -38,11 +39,55 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
+# --------------------------------------------------
+# SaaS Oil Company App Schemas
 # --------------------------------------------------
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Userauth(BaseModel):
+    """
+    Auth users collection
+    Collection: "userauth"
+    """
+    name: str
+    email: EmailStr
+    password_hash: str
+    company: Optional[str] = None
+    role: str = "user"
+
+class Blogpost(BaseModel):
+    """
+    Blog posts collection
+    Collection: "blogpost"
+    """
+    title: str
+    slug: str
+    excerpt: Optional[str] = None
+    content: str
+    author: str
+    tags: List[str] = []
+    published: bool = True
+    published_at: Optional[datetime] = None
+    cover_image: Optional[str] = None
+
+class Contactmessage(BaseModel):
+    """
+    Contact form submissions
+    Collection: "contactmessage"
+    """
+    name: str
+    email: EmailStr
+    company: Optional[str] = None
+    message: str
+    subject: Optional[str] = None
+    status: str = "new"  # new, read, responded
+
+class Pricingplan(BaseModel):
+    """
+    Pricing plans
+    Collection: "pricingplan"
+    """
+    name: str
+    price_monthly: float
+    price_yearly: float
+    features: List[str]
+    most_popular: bool = False
